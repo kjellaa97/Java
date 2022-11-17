@@ -1,103 +1,117 @@
-<%@ page contentType="text/html; charset=utf-8" pageEncoding="utf-8"%>
+<%@ page  contentType="text/html; charset=utf-8" pageEncoding="utf-8"%>
 <!DOCTYPE html>
 <html>
 <head>
 <meta charset="utf-8">
-<title>회원가입 폼</title>
-<style type="text/css">
-	main { width:fit-content; margin:1em auto;}
-	main>h3 { width:fit-content; margin:1em auto; }
-	form { padding:1em; border:1px solid black;}
-	form label { display:inline-block; width:5em; padding-right:0.5em; text-align: right; }
-	form>div { margin:0.5em; }
-	div.btn { width:fit-content;  margin:0 auto;}
-	div#desc>label{ display:inline-block; height:3em; vertical-align:top; padding-top:1.5em;;}
+<title> 회원가입 화면 </title>
+<style>
+	li{display: inline;}
 </style>
 <script src="https://code.jquery.com/jquery-3.6.1.min.js" integrity="sha256-o88AwQnZB+VDvE9tvIXrMQaPlFFSUTR+nldQm1LuPXQ=" crossorigin="anonymous"></script>
 <script type="text/javascript">
-	function formCheck(){
-		var name = $('#name').val();
-		var birth = $('#birth').val();
-		var email = $('#email').val();
-		var career = $('#career').val();
-		var desc = $('#desc').text();
-		var gender = '';
-		var subjects = '';
-		
-		$('input[name=gender]').each(function(index, item){
-			if(item.checked) {
-				gender = $(item).val();
-			}
-		});
-		$('input[name=subjects]').each(function(index, item){
-			if(item.checked) {
-				subjects = $(item).val();
-			}
-		});
-
-		if(name=='' || birth=='' || email=='' || career=='' || desc=='' || gender=='' || subjects=='')
-		{
-			alert('모든 항목은 필수로 입력해야 합니다');
-			return false;
-		}
-		alert($('#addForm').serialize());
-		join();
-	}
 	
-	function join(){
-		console.log('join() 시작');
-		$.ajax({
-			url : 'joinProc.jsp',
-			method:'post',
-			data: $('#addForm').serialize(),
-			cache:false,
-			dataType:'json',
-			success:function(res){
-				alert(res.added ?'회원정보 추가 성공':'정보추가 실패');
-			},
-			error : function(xhr,status,err){
-				alert('에러:' + err);
-			}
-		});
+function formCheck(){
+	
+	var name= $('input[name=name]').val();
+	var sex = '';
+	$('input[type=radio]').each(function(index,item){
+		if(item.checked)
+		{ 
+			sex= $(item).val();
+		}
+	});
+	var dob= $('input[name=dob]').val();
+	var email=$('input[name=email]').val();
+	var year=$('input[name=year]').val();
+	var subject = '';
+	$('input[type=checkbox]').each(function(index, item){
+		if(item.checked) 
+		{
+			subject= $(item).val();
+		}	
+	});
+	var intro=$('textarea[name=intro]').text();
+	console.log(intro);
+	
+	if(name==''|| sex=='' || dob==''|| email=='' || year=='' || subject=='' || intro==''){
+		alert("모든 항목을 입력해주세요");
 		return false;
 	}
+	alert('폼을 전송합니다');
+
+	return signup();
+
+}
+	
+function signup()
+{	
+	var serData= $('#signup').serialize();
+	$.ajax({
+		url:'joinProc.jsp',
+		method: 'post',
+		data: serData,
+		cache: false,
+		dataType: 'json',
+		success: function(res){
+			alert(res.saved ?'회원정보 추가 성공':'정보추가 실패');
+		},
+		error: function(xhr, status, err){
+			alert(err);
+		}
+	});
+	return false; 
+}
+
+
+
 </script>
 </head>
+
 <body>
-<main>
-<h3>회원 가입</h3>
-<form id="addForm" onsubmit="return formCheck();">
-	<div><label for="name">이 름</label>
-		<input type="text" id="name" name="name" value="smith" required>
+<form id="signup" onsubmit="return formCheck();">
+
+<div><label for= "name"> 이름</label>
+	<input type="text" name="name" value= "Ella"> </div>
+<div><label > 성별</label>
+<label for="female"> 여</label>
+	<input type="radio" name="sex" value="F" checked="checked" required> 
+<label for="male"> 남 </label>
+	<input type= "radio" name="sex" value="M" ></div>
+<div><label for= "dob"> 생일</label>
+	<input type="date" name="dob"  value= "1997-05-08" required> </div>
+<div><label for= "email"> 이메일</label>
+	<input type="text" name="email" value="happy@gmail.com"> </div>
+<div><label for= "year"> 경력 연수</label>
+	<input type="number" name="year" value= "1"> </div>
+<div>
+<label for= "subject"> 관심 과목</label>
+	<div> 
+	<input type="checkbox" name="subject" value="Chemistry" checked="checked" > 
+	Chemistry
 	</div>
-	<div><label for="gender">성 별</label>
-		<input type="radio" name="gender" value="m" checked>남
-		<input type="radio" name="gender" value="f">여
+	<div> 
+	<input type="checkbox" name="subject" value="Biology"  > 
+	Biology
 	</div>
-	<div><label for="birth">생 일</label>
-		<input type="date" id="birth" name="birth" value="2000-05-12" required>
+	<div> 
+	<input type="checkbox" name="subject" value="Lab"  > 
+	Lab
 	</div>
-	<div><label for="email">메 일</label>
-		<input type="email" id="email" name="email" value="smith@gmail.com" required>
+	<div> 
+	<input type="checkbox" name="subject" value="English" > 
+	English
 	</div>
-	<div><label for="career">경 력</label>
-		<input type="number" id="career" name="career" value="2" min="0" max="100">
-	</div>
-	<div><label for="subjects">관심과목</label>
-		<input type="checkbox" name="subjects" value="Java" checked>Java
-		<input type="checkbox" name="subjects" value="Python">Python
-		<input type="checkbox" name="subjects" value="Spring">Spring
-		<input type="checkbox" name="subjects" value="Database">Database
-		<input type="checkbox" name="subjects" value="PHP">PHP
-	</div>
-	<div id="desc"><label for="desc">개인소개</label>
-		<textarea id="desc" name="desc" rows="5" cols="45" placeholder="100단어 이내로 입력" required></textarea>
-	</div>
-	<div class="btn">
-		<button type="reset">취소</button>
-		<button type="submit">저장</button>
-	</div>
+	<div> 
+	<input type="checkbox" name="subject" value="History" > 
+	History
+	</div>	
+</div>
+<div><label for= "introduction"> 개인 소개</label>
+	<textarea name="intro" rows="5" cols="10" placeholder="자기소개 입력해주세요"  required> Hi I'm Ella </textarea> </div>
+
+<div><button type="submit">저장</button></div>
 </form>
-</main>
+<p>
+<a href= "memList.jsp">이용자 목록</a>
 </body>
 </html>
